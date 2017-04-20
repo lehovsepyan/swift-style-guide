@@ -32,7 +32,7 @@ Our overarching goals are clarity, consistency and brevity, in that order.
   * [Constants](#constants)
   * [Static Methods and Variable Type Properties](#static-methods-and-variable-type-properties)
   * [Optionals](#optionals)
-  * [Lazy Initialization](#lazy-initialization)
+  * [Initialization](#lazy-initialization)
   * [Type Inference](#type-inference)
   * [Syntactic Sugar](#syntactic-sugar)
 * [Functions vs Methods](#functions-vs-methods)
@@ -579,15 +579,26 @@ if let unwrappedSubview = optionalSubview {
 
 Consider using lazy initialization for finer grain control over object lifetime. This is especially true for `UIViewController` that loads views lazily. You can either use a closure that is immediately called `{ }()` or call a private factory method. Example:
 
+**Preferred**
 ```swift
-lazy var locationManager: CLLocationManager = self.makeLocationManager()
-
-private func makeLocationManager() -> CLLocationManager {
+lazy var locationManager: CLLocationManager = {
   let manager = CLLocationManager()
   manager.desiredAccuracy = kCLLocationAccuracyBest
   manager.delegate = self
   manager.requestAlwaysAuthorization()
   return manager
+}()
+```
+**Not Preferred**
+```swift
+var locationManager: CLLocationManager!
+
+override func viewDidLoad() {
+    super.viewDidLoad()
+    
+  locationManager.desiredAccuracy = kCLLocationAccuracyBest
+  locationManager.delegate = self
+  locationManager.requestAlwaysAuthorization()
 }
 ```
 
