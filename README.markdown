@@ -32,7 +32,7 @@ Our overarching goals are clarity, consistency and brevity, in that order.
   * [Constants](#constants)
   * [Static Methods and Variable Type Properties](#static-methods-and-variable-type-properties)
   * [Optionals](#optionals)
-  * [Lazy Initialization](#lazy-initialization)
+  * [Initialization](#lazy-initialization)
   * [Type Inference](#type-inference)
   * [Syntactic Sugar](#syntactic-sugar)
 * [Functions vs Methods](#functions-vs-methods)
@@ -484,14 +484,14 @@ Always use Swift's native types when available. Swift offers bridging to Objecti
 
 **Preferred:**
 ```swift
-let width = 120.0                                    // Double
-let widthString = (width as NSNumber).stringValue    // String
+let width = 120.0                              // Double
+let widthString = width.description            // String
 ```
 
 **Not Preferred:**
 ```swift
-let width: NSNumber = 120.0                          // NSNumber
-let widthString: NSString = width.stringValue        // NSString
+let width: NSNumber = 120.0                    // NSNumber
+let widthString: NSString = width.stringValue  // NSString
 ```
 
 In Sprite Kit code, use `CGFloat` if it makes the code more succinct by avoiding too many conversions.
@@ -579,15 +579,26 @@ if let unwrappedSubview = optionalSubview {
 
 Consider using lazy initialization for finer grain control over object lifetime. This is especially true for `UIViewController` that loads views lazily. You can either use a closure that is immediately called `{ }()` or call a private factory method. Example:
 
+**Preferred**
 ```swift
-lazy var locationManager: CLLocationManager = self.makeLocationManager()
-
-private func makeLocationManager() -> CLLocationManager {
+lazy var locationManager: CLLocationManager = {
   let manager = CLLocationManager()
   manager.desiredAccuracy = kCLLocationAccuracyBest
   manager.delegate = self
   manager.requestAlwaysAuthorization()
   return manager
+}()
+```
+**Not Preferred**
+```swift
+var locationManager: CLLocationManager!
+
+override func viewDidLoad() {
+    super.viewDidLoad()
+    
+  locationManager.desiredAccuracy = kCLLocationAccuracyBest
+  locationManager.delegate = self
+  locationManager.requestAlwaysAuthorization()
 }
 ```
 
@@ -692,15 +703,6 @@ resource.request().onComplete { [weak self] response in
   }
   let model = strongSelf.updateModel(response)
   strongSelf.updateUI(model)
-}
-```
-
-**Not Preferred**
-```swift
-// might crash if self is released before response returns
-resource.request().onComplete { [unowned self] response in
-  let model = self.updateModel(response)
-  self.updateUI(model)
 }
 ```
 
