@@ -145,6 +145,47 @@ let toView = context.view(forKey: UITransitionContextViewKey.to)
 let view = UIView(frame: CGRect.zero)
 ```
 
+### Enums
+
+**Example**
+```swift
+enum Shapes {
+    case rectangle
+    case triangle
+}
+```
+
+**Example with raw value**
+```swift
+enum Shapes: String {
+    case rectangle = "I am Rectangle!"
+    case triangle = "I am Triangle!"
+}
+
+let shapeName = Shapes.rectangle.rawValue   // print(shapeName): "I am Rectangle!"
+```
+
+**Example with property**
+```swift
+enum Shapes {
+    case rectangle(Double, Double)
+    case triangle(Double, Double, Double)
+    
+    var area: Double {
+        switch self {
+        case .rectangle(let a, let b):
+            return a * b
+        case .triangle(let a, let b, let c):
+            let hp = (a + b + c) / 2 // half perimeter
+            return (hp * (hp - a) * (hp - b) * (hp - c)).squareRoot()
+        }
+    }
+}
+
+let rectArea = Shapes.rectangle(4, 5).area // print(rectArea): 20
+```
+
+
 ### Generics
 
 Generic type parameters should be descriptive, upper camel case names. When a type name doesn't have a meaningful relationship or role, use a traditional single uppercase letter such as `T`, `U`, or `V`.
@@ -224,6 +265,68 @@ Aspirational methods not directly associated with the tutorial whose implementat
 override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
   return Database.contacts.count
 }
+```
+
+**Preferred:**
+```swift
+
+class DiceGame { }
+
+protocol DiceGameDelegate: class {
+    func gameDidStart(_ game: DiceGame)
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int)
+}
+
+extension DiceGameDelegate {
+    // This will be the default implementation for this method
+    // and classes will not be required to implement it
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int) { }
+}
+
+class SampleClass {
+    weak var delegate: DiceGameDelegate?
+}
+```
+
+**Not Preferred:**
+```swift
+
+@objc class DiceGame: NSObject { }
+
+@objc protocol DiceGameDelegate: class {
+    func gameDidStart(_ game: DiceGame)
+    // This method will become optional and classes will not be required to implement it
+    @objc optional func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int)
+}
+
+class SampleClass {
+    weak var delegate: DiceGameDelegate?
+}
+```
+
+
+
+
+
+``` swift
+protocol DiceGameDelegate: class {
+    func gameDidStart(_ game: DiceGame)
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int)
+}
+
+class SampleClass {
+    weak var delegate: DiceGameDelegate?
+}
+
+extension SampleClass: DiceGameDelegate {
+    
+    func gameDidStart(_ game: DiceGame) { }
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int) { }
+}
+```
+
+**Not Preferred:**
+```swift
 ```
 
 **Not Preferred:**
@@ -702,6 +805,16 @@ resource.request().onComplete { [unowned self] response in
   let model = self.updateModel(response)
   self.updateUI(model)
 }
+```
+
+**Preferred**
+```swift
+weak var delegate: MyCustomDelegate?
+```
+
+**Not Preferred**
+```swift
+var delegate: MyCustomDelegate?
 ```
 
 **Not Preferred**
