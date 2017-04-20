@@ -226,6 +226,23 @@ override func tableView(_ tableView: UITableView, numberOfRowsInSection section:
 }
 ```
 
+**Preferred:**
+
+
+```swift
+protocol DiceGameDelegate {
+    func gameDidStart(_ game: DiceGame)
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int)
+    func gameDidEnd(_ game: DiceGame)
+}
+
+extension 
+```
+
+**Not Preferred:**
+```swift
+```
+
 **Not Preferred:**
 ```swift
 override func didReceiveMemoryWarning() {
