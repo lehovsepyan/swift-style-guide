@@ -226,6 +226,68 @@ override func tableView(_ tableView: UITableView, numberOfRowsInSection section:
 }
 ```
 
+**Preferred:**
+```swift
+
+class DiceGame { }
+
+protocol DiceGameDelegate: class {
+    func gameDidStart(_ game: DiceGame)
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int)
+}
+
+extension DiceGameDelegate {
+    // This will be the default implementation for this method
+    // and classes will not be required to implement it
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int) { }
+}
+
+class SampleClass {
+    weak var delegate: DiceGameDelegate?
+}
+```
+
+**Not Preferred:**
+```swift
+
+@objc class DiceGame: NSObject { }
+
+@objc protocol DiceGameDelegate: class {
+    func gameDidStart(_ game: DiceGame)
+    // This method will become optional and classes will not be required to implement it
+    @objc optional func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int)
+}
+
+class SampleClass {
+    weak var delegate: DiceGameDelegate?
+}
+```
+
+
+
+
+
+``` swift
+protocol DiceGameDelegate: class {
+    func gameDidStart(_ game: DiceGame)
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int)
+}
+
+class SampleClass {
+    weak var delegate: DiceGameDelegate?
+}
+
+extension SampleClass: DiceGameDelegate {
+    
+    func gameDidStart(_ game: DiceGame) { }
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int) { }
+}
+```
+
+**Not Preferred:**
+```swift
+```
+
 **Not Preferred:**
 ```swift
 override func didReceiveMemoryWarning() {
@@ -702,6 +764,16 @@ resource.request().onComplete { [unowned self] response in
   let model = self.updateModel(response)
   self.updateUI(model)
 }
+```
+
+**Preferred**
+```swift
+weak var delegate: MyCustomDelegate?
+```
+
+**Not Preferred**
+```swift
+var delegate: MyCustomDelegate?
 ```
 
 **Not Preferred**
