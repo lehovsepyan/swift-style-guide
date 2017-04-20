@@ -226,6 +226,59 @@ override func tableView(_ tableView: UITableView, numberOfRowsInSection section:
 }
 ```
 
+**Preferred:**
+
+
+```swift
+protocol DiceGameDelegate {
+    func gameDidStart(_ game: DiceGame)
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int)
+    func gameDidEnd(_ game: DiceGame)
+}
+
+
+class SampleClass {
+    
+    // This will cause strong reference cycle
+    var delegate: DiceGameDelegate?
+}
+
+extension SampleClass: DiceGameDelegate {
+    
+    func gameDidStart(_ game: DiceGame) { }
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int) { }
+    func gameDidEnd(_ game: DiceGame) { }
+}
+
+
+
+class SampleClass: DiceGameDelegate {
+    
+    func gameDidStart(_ game: DiceGame) { }
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int) { }
+    func gameDidEnd(_ game: DiceGame) { }
+}
+
+struct SampleStruct: DiceGameDelegate {
+    
+    func gameDidStart(_ game: DiceGame) { }
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int) { }
+    func gameDidEnd(_ game: DiceGame) { }
+}
+
+enum SampleEnum: DiceGameDelegate {
+    
+    func gameDidStart(_ game: DiceGame) { }
+    func game(_ game: DiceGame, didStartNewTurnWithDiceRoll diceRoll: Int) { }
+    func gameDidEnd(_ game: DiceGame) { }
+}
+
+```
+
+**Not Preferred:**
+```swift
+```
+
 **Not Preferred:**
 ```swift
 override func didReceiveMemoryWarning() {
